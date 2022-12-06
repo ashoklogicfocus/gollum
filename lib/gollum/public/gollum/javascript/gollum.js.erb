@@ -151,29 +151,48 @@ function enable_code_blocks() {
   };
 
   codeBlocks.forEach((item, idx) => {
+    const preElement = item.parentNode;
+
+    // The 'copy to clipboard' button is hidden by default. In order to make
+    // this button fully accessible, we need the parent <pre> element to be in
+    // the tabindex.
+    preElement.setAttribute('tabindex', '0');
+
     // assign a unique ID so the element can be selected later.
     const id = `code-clipboard-${idx + 1}`;
 
     const button = document.createElement("button");
-
     button.setAttribute('aria-label', 'copy to clipboard');
-    button.hidden = true;
+    button.style.visibility = 'hidden';
     button.dataset.codeblock = id;
     button.innerHTML = iconCopyDefault;
     button.onclick = copyToClipboard;
     button.classList.add(
-      "btn", 
-      "btn-octicon", 
-      "border", 
-      "position-absolute", 
-      "top-2", 
-      "right-2", 
+      "btn",
+      "btn-octicon",
+      "border",
+      "position-absolute",
+      "top-2",
+      "right-2",
     );
 
     item.id = id;
-    item.parentNode.addEventListener('mouseenter', () => button.hidden = false);
-    item.parentNode.addEventListener('mouseleave', () => button.hidden = true );
-    item.parentNode.appendChild(button);
+
+    ['focus', 'mouseenter'].forEach(action => {
+      preElement.addEventListener(action, () => {
+        button.style.visibility = 'visible';
+      });
+    });
+
+    ['focusout', 'mouseleave'].forEach(action => {
+      preElement.addEventListener(action, (event) => {
+        if (event.relatedTarget !== button) {
+          button.style.visibility = 'hidden';
+        }
+      });
+    });
+
+    preElement.appendChild(button);
   });
 }
 
