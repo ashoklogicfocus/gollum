@@ -1,4 +1,4 @@
-FROM ruby:3.1-alpine AS builder
+FROM ruby:3.1-alpine@sha256:7465283c0cbab7059b55528ba156d5dadf7ee2b37158b77a55fce38e19fd5ae2 AS builder
 
 RUN apk add --update \
             --no-cache \
